@@ -210,6 +210,69 @@ async function main() {
   );
   console.log("Resultado inverte-string:", inverteSubmissao.data);
 
+  // ─── EXERCÍCIO 9: Soma valores do objeto ─────────────────────────────────────
+  //entrada tem a chave "objeto" — precisa acessar .objeto
+  const somaValoresObjeto = exercicios["soma-valores"].entrada.objeto;
+
+  // let porque SomaFinal cresce no loop
+  let somaFinal = 0;
+
+  for (const chave in somaValoresObjeto) {
+    // Para usar o VALOR da variável como chave, use colchetes: objeto[chave]
+    somaFinal += somaValoresObjeto[chave];
+  }
+
+  const somaValoresSubmissao = await axios.post(
+    "https://servidor-exercicios-js.vercel.app/exercicio/soma-valores",
+    { resposta: somaFinal },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  console.log("Resultado soma-valores:", somaValoresSubmissao.data);
+
+
+  // ex10
+  const { n } = exercicios["n-esimo-primo"].entrada;
+
+  // Função auxiliar que verifica se um número é primo
+  // Um número é primo se não for divisível por nenhum número entre 2 e sua raiz quadrada
+  function ePrimo(num) {
+    if (num < 2) return false;
+    for (let i = 2; i <= Math.sqrt(num); i++) {
+      if (num % i === 0) return false; // achou um divisor → não é primo
+    }
+    return true;
+  }
+
+  // Percorre os números naturais contando quantos são primos
+  // Para quando o contador chega em n
+  let contador = 0; // quantos primos já encontramos
+  let candidato = 1; // número que estamos testando
+
+  while (contador < n) {
+    candidato++;
+    if (ePrimo(candidato)) contador++;
+  }
+  // quando o while termina, candidato é o n-ésimo primo
+
+  const nEsimoSubmissao = await axios.post(
+    "https://servidor-exercicios-js.vercel.app/exercicio/n-esimo-primo",
+    { resposta: candidato },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  console.log("Resultado n-esimo-primo:", nEsimoSubmissao.data);
+
 
 }
 
