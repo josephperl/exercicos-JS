@@ -127,6 +127,89 @@ async function main() {
   console.log("Resultado jaca-wars:", jacaSubmissao.data);
 
 
+  // ex 5 
+  const { ano } = exercicios["ano-bissexto"].entrada;
+
+  // Regras do ano bissexto:
+  // - divisível por 400 → bissexto (ex: 2000)
+  // - divisível por 100 mas não por 400 → NÃO bissexto (ex: 1900)
+  // - divisível por 4 → bissexto (ex: 2024)
+  // - resto → não bissexto
+  // O operador % dá o resto da divisão: 10 % 3 = 1
+  const bissexto = (ano % 400 === 0) || (ano % 4 === 0 && ano % 100 !== 0);
+
+  const bissextoSubmissao = await axios.post(
+    "https://servidor-exercicios-js.vercel.app/exercicio/ano-bissexto",
+    { resposta: bissexto },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  console.log("Resultado ano-bissexto:", bissextoSubmissao.data);
+
+//ex 6
+  const { z, a: altura } = exercicios["volume-da-pizza"].entrada;
+  // Volume do cilindro = PI * r² * h
+  const respostaPizza = Math.round(Math.PI * (z ** 2) * altura);
+
+  const pizzaSubmissao = await axios.post(
+    "https://servidor-exercicios-js.vercel.app/exercicio/volume-da-pizza",
+    { resposta: respostaPizza },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  console.log("Resultado volume-da-pizza:", pizzaSubmissao.data);
+
+
+  // ex 7
+  const { s0, v: velocidade, t } = exercicios.mru.entrada;
+  const respostaMru = s0 + velocidade * t;
+
+  const mruSubmissao = await axios.post(
+    "https://servidor-exercicios-js.vercel.app/exercicio/mru",
+    { resposta: respostaMru },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  console.log("Resultado mru:", mruSubmissao.data);
+
+
+  // ─── EXERCÍCIO 8: Inverte string ─────────────────────────────────────────────
+  const { string: stringInvertida } = exercicios["inverte-string"].entrada;
+  // Não existe um método direto para inverter string em JS
+  // O truque é: dividir em array de letras → inverter o array → juntar de volta
+  // "abc".split("")        → ["a", "b", "c"]
+  // ["a","b","c"].reverse() → ["c", "b", "a"]
+  // ["c","b","a"].join("")  → "cba"
+  const respostaInverte = stringInvertida.split("").reverse().join("");
+
+  const inverteSubmissao = await axios.post(
+    "https://servidor-exercicios-js.vercel.app/exercicio/inverte-string",
+    { resposta: respostaInverte },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  console.log("Resultado inverte-string:", inverteSubmissao.data);
+
 
 }
 
