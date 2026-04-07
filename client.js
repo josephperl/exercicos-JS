@@ -7,50 +7,127 @@ const axios = require("axios");
 async function main() {
 
   // ─── PASSO 1: Pedir o token de acesso ────────────────────────────────────────
-  // O servidor precisa saber quem você é antes de responder qualquer coisa
-  // Para isso, fazemos um POST enviando o nosso username
-  // O servidor responde com um "accessToken" que usaremos nas próximas requisições
-
-  // "await" significa: espere a resposta chegar antes de continuar
   const response = await axios.post(
-    "https://servidor-exercicios-js.vercel.app/token", // para onde estamos enviando
-    { username: "josephp" },                           // o que estamos enviando (nosso usuário)
+    "https://servidor-exercicios-js.vercel.app/token",
+    { username: "josephp" },
     {
       headers: {
-        "Content-Type": "application/json", // avisa o servidor que estamos enviando JSON
-        Accept: "application/json",         // avisa o servidor que queremos receber JSON
+        "Content-Type": "application/json",
+        Accept: "application/json",
       },
     }
   );
 
-  // "response.data" é o JSON que o servidor retornou
-  // Ele tem a forma: { accessToken: "um texto longo aqui..." }
-  // Salvamos o token numa variável para usar depois
   const token = response.data.accessToken;
   console.log("Token recebido:", token);
 
 
   // ─── PASSO 2: Buscar a lista de exercícios ────────────────────────────────────
-  // Agora que temos o token, podemos pedir os exercícios
-  // Usamos GET porque estamos apenas buscando dados (sem enviar nada no corpo)
-  // O token vai no header "Authorization" para o servidor saber quem está pedindo
-
   const exerciciosResponse = await axios.get(
-    "https://servidor-exercicios-js.vercel.app/exercicio", // de onde estamos buscando
+    "https://servidor-exercicios-js.vercel.app/exercicio",
     {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        // Template string: as crases `` permitem colocar variáveis dentro do texto com ${}
-        // Resultado final fica algo como: "Bearer eyJhbGci..."
         Authorization: `Bearer ${token}`,
       },
     }
   );
 
-  // JSON.stringify transforma o objeto JavaScript em texto formatado
-  // O "null, 2" serve para indentar com 2 espaços e ficar legível no terminal
-  console.log("Exercícios:", JSON.stringify(exerciciosResponse.data, null, 2));
+  const exercicios = exerciciosResponse.data; // atalho para não repetir exerciciosResponse.data
+
+
+  //ex1
+  // pega a e b do objeto entrada usando desestruturação
+  const { a, b } = exercicios.soma.entrada;
+  const respostaSoma = a + b;
+
+  const somaSubmissao = await axios.post(
+    "https://servidor-exercicios-js.vercel.app/exercicio/soma",
+    { resposta: respostaSoma },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  console.log("Resultado soma:", somaSubmissao.data);
+
+
+  //ex2 
+  // Para chaves com hífen, use colchetes: exercicios["tamanho-string"]
+  const entrada = exercicios["tamanho-string"].entrada; 
+
+  const respostaTamanho = entrada.string.length;
+  const tamanhoSubmissao = await axios.post(
+    "https://servidor-exercicios-js.vercel.app/exercicio/tamanho-string",
+    { resposta: respostaTamanho },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  console.log("Resultado tamanho-string:", tamanhoSubmissao.data);
+
+
+  //ex 3
+  const entradaEmail = exercicios["nome-do-usuario"].entrada;
+  const email = entradaEmail.email.split("@");                
+  const nomeresposta = email[0];                            
+  const nomeSubmissao = await axios.post(
+    "https://servidor-exercicios-js.vercel.app/exercicio/nome-do-usuario",
+    { resposta: nomeresposta },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  console.log("Resultado nome-do-usuario:", nomeSubmissao.data);
+
+
+  //ex 4 - jaca-wars
+  const { v, theta } = exercicios["jaca-wars"].entrada;
+
+  // Math.sin espera radianos, mas theta veio em graus
+  // Fórmula de conversão: graus * (PI / 180)
+  const thetaRad = theta * (Math.PI / 180);
+
+  // Fórmula do alcance do projétil: v² * sen(2θ) / g
+  const distancia = (v ** 2) * Math.sin(2 * thetaRad) / 9.8;
+
+  // Alvo está a 100m, jaca se espalha 2m → acerta entre 98 e 102
+  let respostaJaca; //let é como const, mas o valor pode ser alterado depois
+  if (distancia < 98) {
+    respostaJaca = -1; // não chegou
+  } else if (distancia > 102) {
+    respostaJaca = 1;  // passou
+  } else {
+    respostaJaca = 0;  // acertou
+  }
+
+  const jacaSubmissao = await axios.post(
+    "https://servidor-exercicios-js.vercel.app/exercicio/jaca-wars",
+    { resposta: respostaJaca },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  console.log("Resultado jaca-wars:", jacaSubmissao.data);
+
+
+
 }
 
 // Chama a função main para executar tudo acima
