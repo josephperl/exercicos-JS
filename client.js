@@ -274,6 +274,163 @@ async function main() {
   console.log("Resultado n-esimo-primo:", nEsimoSubmissao.data);
 
 
+  // ─── EXERCÍCIO 11: Maior prefixo comum ───────────────────────────────────────
+  const { strings } = exercicios["maior-prefixo-comum"].entrada;
+
+  let melhorPrefixo = ""; // guarda o maior prefixo encontrado até agora
+
+  // Compara cada par de strings (i com j, sem repetir pares)
+  for (let i = 0; i < strings.length; i++) {
+    for (let j = i + 1; j < strings.length; j++) {
+      let prefixo = "";
+
+      // Avança letra por letra enquanto as duas strings forem iguais
+      for (let k = 0; k < Math.min(strings[i].length, strings[j].length); k++) {
+        if (strings[i][k] === strings[j][k]) {
+          prefixo += strings[i][k]; // adiciona a letra ao prefixo
+        } else {
+          break; // letras diferentes → para
+        }
+      }
+
+      // Se esse prefixo for maior que o melhor até agora, atualiza
+      if (prefixo.length > melhorPrefixo.length) {
+        melhorPrefixo = prefixo;
+      }
+    }
+  }
+
+  const prefixoSubmissao = await axios.post(
+    "https://servidor-exercicios-js.vercel.app/exercicio/maior-prefixo-comum",
+    { resposta: melhorPrefixo },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  console.log("Resultado maior-prefixo-comum:", prefixoSubmissao.data);
+
+
+  // ─── EXERCÍCIO 12: Soma do segundo maior e segundo menor ─────────────────────
+  const { numeros } = exercicios["soma-segundo-maior-e-menor-numeros"].entrada;
+
+  // .sort() sem argumento ordena como texto ("10" vem antes de "9")
+  // Passando (a, b) => a - b, ordenamos numericamente do menor ao maior
+  const ordenado = [...numeros].sort((a, b) => a - b);
+  // [...numeros] cria uma cópia do array para não alterar o original
+
+  const segundoMenor = ordenado[1];                    // índice 1 = segundo menor
+  const segundoMaior = ordenado[ordenado.length - 2];  // penúltimo = segundo maior
+
+  const respostaSegundo = segundoMenor + segundoMaior;
+
+  const segundoSubmissao = await axios.post(
+    "https://servidor-exercicios-js.vercel.app/exercicio/soma-segundo-maior-e-menor-numeros",
+    { resposta: respostaSegundo },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  console.log("Resultado soma-segundo-maior-e-menor-numeros:", segundoSubmissao.data);
+
+
+  // ─── EXERCÍCIO 13: Conta palíndromos ─────────────────────────────────────────
+  const { palavras } = exercicios["conta-palindromos"].entrada;
+
+  // Palíndromo = palavra que é igual ao seu inverso (ex: "aba", "racecar")
+  // filter() percorre o array e mantém só os elementos que passam na condição
+  // O resultado é um novo array só com os palíndromos
+  const palindromos = palavras.filter((palavra) => {
+    const invertida = palavra.split("").reverse().join("");
+    return palavra === invertida; // true = mantém, false = descarta
+  });
+
+  // .length do array filtrado = quantidade de palíndromos
+  const respostaPalindromos = palindromos.length;
+
+  const palindromosSubmissao = await axios.post(
+    "https://servidor-exercicios-js.vercel.app/exercicio/conta-palindromos",
+    { resposta: respostaPalindromos },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  console.log("Resultado conta-palindromos:", palindromosSubmissao.data);
+
+
+  // ─── EXERCÍCIO 14: Soma de strings de ints ───────────────────────────────────
+  const { strings: stringsDeInts } = exercicios["soma-de-strings-de-ints"].entrada;
+
+  // map() transforma cada elemento do array em outra coisa
+  // Aqui convertemos cada string ("37163") em número inteiro (37163)
+  // parseInt("37163") → 37163
+  const numeros2 = stringsDeInts.map((s) => parseInt(s));
+
+  // reduce() percorre o array acumulando um resultado
+  // acc = acumulador (começa em 0), val = elemento atual
+  // A cada passo: acc = acc + val
+  const respostaStrings = numeros2.reduce((acc, val) => acc + val, 0);
+
+  const stringsSubmissao = await axios.post(
+    "https://servidor-exercicios-js.vercel.app/exercicio/soma-de-strings-de-ints",
+    { resposta: respostaStrings },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  console.log("Resultado soma-de-strings-de-ints:", stringsSubmissao.data);
+
+
+  // ─── EXERCÍCIO 15: Soma com requisições ──────────────────────────────────────
+  const { endpoints } = exercicios["soma-com-requisicoes"].entrada;
+
+  // Promise.all recebe um array de requisições e espera TODAS terminarem
+  // É mais rápido que fazer uma por vez com await em sequência
+  // map() transforma cada URL em uma requisição axios
+  const respostas = await Promise.all(
+    endpoints.map((url) =>
+      axios.get(url, {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+    )
+  );
+
+  // Cada resposta tem um número em .data — somamos todos com reduce
+  const respostaRequisicoes = respostas.reduce((acc, r) => acc + r.data, 0);
+
+  const requisicoesSubmissao = await axios.post(
+    "https://servidor-exercicios-js.vercel.app/exercicio/soma-com-requisicoes",
+    { resposta: respostaRequisicoes },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  console.log("Resultado soma-com-requisicoes:", requisicoesSubmissao.data);
+
+
 }
 
 // Chama a função main para executar tudo acima
